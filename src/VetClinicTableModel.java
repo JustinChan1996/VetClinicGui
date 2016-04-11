@@ -192,14 +192,4 @@ public class VetClinicTableModel extends AbstractTableModel
         fireTableDataChanged();
         return pet;
     }
-    
-    /**
-     * Method to reset the data of the table model
-     */
-    public void reset()
-    {
-        VetClinic newClinic = new VetClinic();
-        setClinic(newClinic);
-    }
-    
 }

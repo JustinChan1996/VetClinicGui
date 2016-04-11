@@ -76,6 +76,13 @@ public class VetClinic implements Serializable{
     /* toString method */
     public String toString()
     {
-        return "Clinic name " + this.getName() + " has " + getPets().size() + " pets registered in the system ";
+        if(!(this.getName() == null))
+        {
+            return "Clinic " + this.getName() + " has " + getPets().size() + " pets registered in the system ";
+        }
+        else
+        {
+            return "Clinic has " + getPets().size() + " pets registered in the system ";
+        }
     }
 }
