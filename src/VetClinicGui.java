@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
@@ -53,7 +54,9 @@ public class VetClinicGui extends javax.swing.JFrame {
                 if (VetClinicTable.getSelectedRow() > -1) 
                 {
                     // Display pet id value from selected row
-                    txtPetId.setText(Integer.toString(VetClinicTable.getSelectedRow() + 1));
+                    int value = VetClinicTable.getSelectedRow();
+                    txtPetId.setText((VetClinicTable.getValueAt(value, 0).toString()));
+                    
                 }
             }
         });
@@ -101,7 +104,6 @@ public class VetClinicGui extends javax.swing.JFrame {
         btnAddNewPet = new javax.swing.JButton();
         btnAdministerDossage = new javax.swing.JButton();
         btnEditPetDetails = new javax.swing.JButton();
-        btnChangeSortingCriteria = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         txtPetId = new javax.swing.JTextField();
@@ -240,8 +242,6 @@ public class VetClinicGui extends javax.swing.JFrame {
             }
         });
 
-        btnChangeSortingCriteria.setText("Change sorting criteria");
-
         btnExit.setText("Exit");
         btnExit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -285,23 +285,22 @@ public class VetClinicGui extends javax.swing.JFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(16, 16, 16))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane1)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(btnAddNewPet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnRemovePet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(31, 31, 31)
-                                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnEditPetDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnAdministerDossage)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnChangeSortingCriteria, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 843, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addGap(190, 190, 190)
+                                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(317, 317, 317))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                    .addComponent(btnAddNewPet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnRemovePet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnEditPetDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(btnAdministerDossage)
+                                    .addGap(67, 67, 67))))
                         .addContainerGap(29, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -321,7 +320,6 @@ public class VetClinicGui extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEditPetDetails)
                     .addComponent(btnAdministerDossage)
-                    .addComponent(btnChangeSortingCriteria)
                     .addComponent(btnRemovePet)
                     .addComponent(btnAddNewPet))
                 .addGap(18, 18, 18)
@@ -466,6 +464,8 @@ public class VetClinicGui extends javax.swing.JFrame {
     private void menuNewDatabaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewDatabaseActionPerformed
         // Resets the array and filename
         this.newDatabase();
+        // Reset Id counter of Pet class
+        Pet.setIdCounter(-1);
     }//GEN-LAST:event_menuNewDatabaseActionPerformed
 
     /**
@@ -639,19 +639,20 @@ public class VetClinicGui extends javax.swing.JFrame {
         // Get value from textbox
         try
         {
-            int PetId = Integer.parseInt(txtPetId.getText());
+            int petId = Integer.parseInt(txtPetId.getText());
             // If no exception, check if any object has the PetId
-            // the Pet Id must be above 0
-            if ((PetId <= clinic.getPets().size()) && (PetId > 0))
+            // Find the row in the table with the corresponding pet id
+            int row = this.searchRowWithID(VetClinicTable, petId);
+            if (row != -1)
             {
-                // If pet exist, highlight the row with the pet id
-                Rectangle r = VetClinicTable.getCellRect(PetId, 0, true);
-                VetClinicTable.scrollRectToVisible(r);
+                    Rectangle r = VetClinicTable.getCellRect(row, 0, true);
+                    VetClinicTable.scrollRectToVisible(r);
             }
             else
             {
+                // if pet id is not found, display error message
                 //display error message if no pets have the pet id
-                JOptionPane.showMessageDialog(null, "Pet with pet id " + PetId + " is not found in the system");
+                JOptionPane.showMessageDialog(null, "Pet with pet id " + petId + " is not found in the system");
                 /* reset Pet Id textbox */
                 txtPetId.setText("");
             }
@@ -659,31 +660,46 @@ public class VetClinicGui extends javax.swing.JFrame {
         catch(NumberFormatException e)
         {
             // Display error message if input value is non numeric 
-            JOptionPane.showMessageDialog(null, "Input value must be numeric only");
+            JOptionPane.showMessageDialog(null, "Pet id value must be numeric only");
         }
-        
-    }
+    }   
     
     /**
      * Method to remove pet selected by user in the jtable
      */
     public void removePet()
     {
-        /* Check if pet id exists in the system */;
-        if(isPetIdValid()== true)
+        try
         {
-            /* find row of Jtable with the pet Id */
-            int row = (Integer.parseInt(txtPetId.getText())) - 1;
-            /* pop up a confirmation box displaying pet detail and confirm with user to delete the pet object */
-            int dialogButton = JOptionPane.YES_NO_OPTION;
-            int option = JOptionPane.showConfirmDialog(null, "Confirm Deleting this pet ? \n \n " + clinic.getPets().get(row), "Delete pet", dialogButton);
-            /* Delete the pet if the user selects the yes option */
-            if(option == JOptionPane.YES_OPTION)
+            /* Check if pet id exists in the system */
+            int petId = Integer.parseInt(txtPetId.getText());
+            int row = searchRowWithID(VetClinicTable, petId);
+            if(row != -1)
             {
-                /* Remove the pet from the collection */
-                model.remove(row);
+                /* pop up a confirmation box displaying pet detail and confirm with user to delete the pet object */
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int option = JOptionPane.showConfirmDialog(null, "Confirm Deleting this pet ? \n \n " + clinic.getPets().get(row), "Delete pet", dialogButton);
+                /* Delete the pet if the user selects the yes option */
+                if(option == JOptionPane.YES_OPTION)
+                {
+                    /* Remove the pet from the collection */
+                    model.remove(row);
+                }
+            }
+            else
+            {
+                //display error message if no pets have the pet id
+                JOptionPane.showMessageDialog(null, "Pet with pet id " + petId + " is not found in the system");
+                /* reset Pet Id textbox */
+                txtPetId.setText("");
             }
         }
+        catch(NumberFormatException e)
+        {
+            // Display error message if input value is non numeric 
+            JOptionPane.showMessageDialog(null, "Pet id value must be numeric only");
+        }
+        
 
     }
     
@@ -692,97 +708,83 @@ public class VetClinicGui extends javax.swing.JFrame {
      */
     public void administerDrug()
     {
-        /* check if pet id is valid */
-        if(isPetIdValid() == true)
+        try
         {
-            /* if valid, create a the jdialog object and pass the pet object as a parameter */
-             AddPetDose window = new AddPetDose(null, true);
-            /* find pet object based on pet id */
-            Pet pet = clinic.getPets().get(Integer.parseInt(txtPetId.getText()) - 1);
-            window.setPet(pet);
-            window.setVisible(true);
-            /* update the dose arraylist of the pet object */
-            model.fireTableStructureChanged();
-        }
- 
-        
-    }
-    
-    /**
-     * Method to check if pet id exists in the collection *
-     * @return the validity of the petid
-     */
-    public boolean isPetIdValid()
-    {
-	boolean flag = true;
-	if(txtPetId.getText().equals(""))
-	{
-		/* Display error message if no pet id is selected */
-		JOptionPane.showMessageDialog(null, "No Pet id selected");
-		/* set the valid flag to false */
-		flag = false;
-
-	}
-	else
-	{
-            try
+            int petId = Integer.parseInt(txtPetId.getText());
+            int row = searchRowWithID(VetClinicTable, petId);
+            if(row != -1)
             {
-                /* find the row of the table that corresponds to the petId */
-                int row = (Integer.parseInt(txtPetId.getText())) - 1;
-                /* check if it exist in the collection */
-                if((row >= 0) && (row < clinic.getPets().size()))
-                {
-                        /* if pet id exist, set the flag to true */
-                        flag = true;
-                }
-                else
-                {
-                        /* if pet id does not exist, display error message */
-                        JOptionPane.showMessageDialog(null, "Pet Id does not exist.");
-                        flag = false;
-                }
-
+                /* if valid, create a the jdialog object and pass the pet object as a parameter */
+                 AddPetDose window = new AddPetDose(null, true);
+                /* find pet object based on pet id */
+                Pet pet = clinic.getPets().get(row);
+                window.setPet(pet);
+                window.setVisible(true);
+                /* update the dose arraylist of the pet object */
+                model.fireTableStructureChanged();
             }
-            catch(NumberFormatException e)
+            else
             {
-                /* If non numeric characters are found, display error message */
-                JOptionPane.showMessageDialog(null, "Pet Id box can only contain numeric characters");
-                flag = false;
-            }   
+                //display error message if no pets have the pet id
+                JOptionPane.showMessageDialog(null, "Pet with pet id " + petId + " is not found in the system");
+                /* reset Pet Id textbox */
+                txtPetId.setText("");
+            }
         }
-        return flag;
+        catch(NumberFormatException e)
+        {
+            // Display error message if input value is non numeric 
+            JOptionPane.showMessageDialog(null, "Pet id value must be numeric only");
+        }
     }
-    
+     
     /**
      * Method to open up a window to edit pet's attributes
      */
     public void editPet()
     {
-        if(isPetIdValid() == true)
+        try
         {
-            /* get pet object */
-            Pet pet = clinic.getPets().get(Integer.parseInt(txtPetId.getText()) - 1);
-            /* create new EditPetInfo window */
-            EditPetInfo window = new EditPetInfo(null, true);
-            /* set the pet object attributes in the window */
-            window.setPet(pet);
-            window.setVisible(true);
-            /* Set attribute of pet based on type  if the user clicks on  the confirm button before the input window is disposed */
-            if(window.getBtnflag() == 0)
+            int petId = Integer.parseInt(txtPetId.getText());
+            int row = searchRowWithID(VetClinicTable, petId);
+            if(row != -1)
             {
-                pet.setName(window.getName());
-                pet.setWeight(window.getWeight());
-                    if(pet instanceof Dog)
-                    {
-                        ((Dog) pet).setBreed(window.getBreed());
-                    }
-                    else
-                    {
-                        ((Cat) pet).setAllergic(window.isAllergic());
-                    }
-                    model.fireTableStructureChanged();
+                /* get pet object */
+                Pet pet = clinic.getPets().get(row);
+                /* create new EditPetInfo window */
+                EditPetInfo window = new EditPetInfo(null, true);
+                /* set the pet object attributes in the window */
+                window.setPet(pet);
+                window.setVisible(true);
+                /* Set attribute of pet based on type  if the user clicks on  the confirm button before the input window is disposed */
+                if(window.getBtnflag() == 0)
+                {
+                    pet.setName(window.getName());
+                    pet.setWeight(window.getWeight());
+                        if(pet instanceof Dog)
+                        {
+                            ((Dog) pet).setBreed(window.getBreed());
+                        }
+                        else
+                        {
+                            ((Cat) pet).setAllergic(window.isAllergic());
+                        }
+                        model.fireTableStructureChanged();
+                }
+
             }
-            
+            else
+            {
+                // if pet does not exist, display error message
+                JOptionPane.showMessageDialog(null, "Pet with pet id " + petId + " is not found in the system");
+                /* reset Pet Id textbox */
+                txtPetId.setText("");
+            }
+        }
+        catch(NumberFormatException e)
+        {
+            // Display error message if input value is non numeric 
+            JOptionPane.showMessageDialog(null, "Pet id value must be numeric only");
         }
     }
     
@@ -898,16 +900,39 @@ public class VetClinicGui extends javax.swing.JFrame {
         model.fireTableDataChanged();
         // Clear selected pet Id
         txtPetId.setText("");
-        // Reset Id counter of Pet class
-        Pet.setIdCounter(0);
+    }
+    
+    /*
+ * Method to find row in the JTable with matching pet id
+ */
+
+    /**
+     *
+     * @param table the JTable to search
+     * @param id the pet id to find
+     * @return the row in the JTable with the matching pet id
+     */
+    
+    public int searchRowWithID(JTable table, int id)
+    {
         
+        int row = -1;
+	for(int i = 0; i < table.getRowCount(); i = i + 1)
+	{
+		if((int)table.getValueAt(i,0) == id)
+		{
+                        row = i;
+			break;
+		}
+		
+	}
+	return row;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable VetClinicTable;
     private javax.swing.JButton btnAddNewPet;
     private javax.swing.JButton btnAdministerDossage;
-    private javax.swing.JButton btnChangeSortingCriteria;
     private javax.swing.JButton btnEditPetDetails;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnRemovePet;
@@ -939,5 +964,4 @@ public class VetClinicGui extends javax.swing.JFrame {
     private javax.swing.JTextField txtPetId;
     // End of variables declaration//GEN-END:variables
 
-    
 }

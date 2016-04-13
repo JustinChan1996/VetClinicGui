@@ -325,7 +325,7 @@ public class AddNewPet extends javax.swing.JDialog {
     public void registerPet()
     {
         /* boolean flag for indicating the presence of exception. If exception is thrown, the flag is set to true. The
-        Default boolean value is false. Else, if the flag is false, the pet object is created and saved to the collection.
+        Default boolean value is false.  If the flag is false, the pet object is created and saved to the collection.
         */
         boolean flag = false;
         if(rbtnDog.isSelected())
@@ -345,7 +345,17 @@ public class AddNewPet extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(null, "Input weight must be a positive value only");
                 }
                 newDog.setWeight(weight);
-                newDog.setDob(DatePicker.getDate());
+                if(DatePicker.getDate() != null)
+                {
+                    newDog.setDob(DatePicker.getDate());
+                }
+                else
+                {
+                        // if date is null, don't create the pet object and display error message
+                        JOptionPane.showMessageDialog(null, "Date of birth not specified");
+                        flag = true;
+                        
+                }
             }
             catch(NumberFormatException e)
             {
@@ -392,7 +402,17 @@ public class AddNewPet extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(null, "Input weight must be a positive value only");
                 }
                 newCat.setWeight(weight);
-                newCat.setDob(DatePicker.getDate());
+                if(DatePicker.getDate() != null)
+                {
+                        newCat.setDob(DatePicker.getDate());
+                }
+                else
+                {
+                        // if date is null, don't create the pet object and display error message
+                        JOptionPane.showMessageDialog(null, "Date of birth not specified");
+                        flag = true;
+                        
+                }
             }
             catch(NumberFormatException e)
             {
