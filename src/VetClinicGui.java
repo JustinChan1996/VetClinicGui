@@ -11,6 +11,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -72,7 +74,6 @@ public class VetClinicGui extends javax.swing.JFrame {
             };
         };
         VetClinicTable.setRowSorter(sorter);
-
     }
     
   
@@ -207,12 +208,6 @@ public class VetClinicGui extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(VetClinicTable);
-        if (VetClinicTable.getColumnModel().getColumnCount() > 0) {
-            VetClinicTable.getColumnModel().getColumn(0).setHeaderValue("Title 1");
-            VetClinicTable.getColumnModel().getColumn(1).setHeaderValue("Title 2");
-            VetClinicTable.getColumnModel().getColumn(2).setHeaderValue("Title 3");
-            VetClinicTable.getColumnModel().getColumn(3).setHeaderValue("Title 4");
-        }
 
         btnRemovePet.setText("Remove Pet");
         btnRemovePet.addActionListener(new java.awt.event.ActionListener() {
@@ -287,20 +282,18 @@ public class VetClinicGui extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 843, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addGap(190, 190, 190)
-                                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(317, 317, 317))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                    .addComponent(btnAddNewPet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnRemovePet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnEditPetDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnAdministerDossage)
-                                    .addGap(67, 67, 67))))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(317, 317, 317))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(btnAddNewPet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnRemovePet, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnEditPetDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnAdministerDossage)
+                                .addGap(125, 125, 125)))
                         .addContainerGap(29, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -413,6 +406,24 @@ public class VetClinicGui extends javax.swing.JFrame {
         // Update the clinic description every time the control returns to the main window
         // Initialize clinic name to empty value
         lblConfigStatus.setText(clinic.toString());
+        /* Set the column width of all the columns */
+        /* Array for the size of the column for each column */
+        int columnSize[] = {50,150,75,150,50,100,100,175};
+        for(int i = 0; i < VetClinicTable.getColumnCount(); i = i + 1)
+        {
+            TableColumn column = VetClinicTable.getColumnModel().getColumn(i);
+            column.setMinWidth(columnSize[i]);
+            column.setMaxWidth(columnSize[i]);
+            column.setPreferredWidth(columnSize[i]);
+        }
+        /* Set left allignment for cells with numerical values */
+        DefaultTableCellRenderer leftAllignment = new DefaultTableCellRenderer();
+        leftAllignment.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+        VetClinicTable.getColumn("Pet Id").setCellRenderer(leftAllignment);
+        VetClinicTable.getColumn("Weight(kg)").setCellRenderer(leftAllignment);
+        VetClinicTable.getColumn("Date of birth").setCellRenderer(leftAllignment);
+        VetClinicTable.getColumn("Accumulated Dose(mg)").setCellRenderer(leftAllignment);
+        
     }//GEN-LAST:event_formWindowActivated
 
     private void btnSearchPetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSearchPetMouseClicked

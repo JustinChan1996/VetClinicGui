@@ -92,7 +92,14 @@ public class VetClinicTableModel extends AbstractTableModel
             case 2:
 
                 /* return runtime class of the pet object */
-                return pet.getClass();
+                if(pet instanceof Dog)
+                {
+                    return "Dog";
+                }
+                else
+                {
+                    return "Cat";
+                }
  
             case 3:
       
